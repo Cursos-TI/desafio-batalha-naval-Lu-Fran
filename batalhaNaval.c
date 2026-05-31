@@ -1,165 +1,184 @@
-// Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
-// Sugestão: Expanda o tabuleiro para uma matriz 10x10.
-// Sugestão: Posicione quatro navios no tabuleiro, incluindo dois na diagonal.
-// Sugestão: Exiba o tabuleiro completo no console, mostrando 0 para posições vazias e 3 para posições ocupadas.
-
+    // Nível Mestre - Habilidades Especiais com Matrizes
+    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
+    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
+    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
 #include <stdio.h>
 
 #define TAM_TABULEIRO 10
 #define TAM_NAVIO 3
+#define TAM_HABILIDADE 5
+
 #define AGUA 0
 #define NAVIO 3
+#define HABILIDADE 5
 
-int main() {
+void aplicarHabilidade(
+    int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO],
+    int habilidade[TAM_HABILIDADE][TAM_HABILIDADE],
+    int origemLinha,
+    int origemColuna)
+{
+    int i, j;
 
-    int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO] = {0};
-    int i, j, sobreposicao;
+    int centro = TAM_HABILIDADE / 2;
 
-    // =====================================
-    // COORDENADAS DOS 4 NAVIOS
-    // =====================================
+    for(i = 0; i < TAM_HABILIDADE; i++) {
+        for(j = 0; j < TAM_HABILIDADE; j++) {
 
-    // Horizontal
-    int linhaH = 1;
-    int colunaH = 1;
+            if(habilidade[i][j] == 1) {
 
-    // Vertical
-    int linhaV = 5;
-    int colunaV = 8;
+                int linhaTab = origemLinha + (i - centro);
+                int colunaTab = origemColuna + (j - centro);
 
-    // Diagonal principal (\)
-    int linhaDP = 0;
-    int colunaDP = 5;
-
-    // Diagonal secundária (/)
-    int linhaDS = 4;
-    int colunaDS = 2;
-
-    // =====================================
-    // NAVIO HORIZONTAL
-    // =====================================
-
-    if (colunaH + TAM_NAVIO <= TAM_TABULEIRO) {
-
-        sobreposicao = 0;
-
-        for(i = 0; i < TAM_NAVIO; i++) {
-            if(tabuleiro[linhaH][colunaH + i] != AGUA) {
-                sobreposicao = 1;
-            }
-        }
-
-        if(!sobreposicao) {
-            for(i = 0; i < TAM_NAVIO; i++) {
-                tabuleiro[linhaH][colunaH + i] = NAVIO;
+                if(linhaTab >= 0 &&
+                   linhaTab < TAM_TABULEIRO &&
+                   colunaTab >= 0 &&
+                   colunaTab < TAM_TABULEIRO)
+                {
+                    if(tabuleiro[linhaTab][colunaTab] == AGUA) {
+                        tabuleiro[linhaTab][colunaTab] = HABILIDADE;
+                    }
+                }
             }
         }
     }
+}
 
-    // =====================================
-    // NAVIO VERTICAL
-    // =====================================
-
-    if (linhaV + TAM_NAVIO <= TAM_TABULEIRO) {
-
-        sobreposicao = 0;
-
-        for(i = 0; i < TAM_NAVIO; i++) {
-            if(tabuleiro[linhaV + i][colunaV] != AGUA) {
-                sobreposicao = 1;
-            }
-        }
-
-        if(!sobreposicao) {
-            for(i = 0; i < TAM_NAVIO; i++) {
-                tabuleiro[linhaV + i][colunaV] = NAVIO;
-            }
-        }
-    }
-
-    // =====================================
-    // NAVIO DIAGONAL PRINCIPAL (\)
-    // =====================================
-
-    if ((linhaDP + TAM_NAVIO <= TAM_TABULEIRO) &&
-        (colunaDP + TAM_NAVIO <= TAM_TABULEIRO)) {
-
-        sobreposicao = 0;
-
-        for(i = 0; i < TAM_NAVIO; i++) {
-            if(tabuleiro[linhaDP+i][colunaDP+i] != AGUA) {
-                sobreposicao = 1;
-            }
-        }
-
-        if(!sobreposicao) {
-            for(i = 0; i < TAM_NAVIO; i++) {
-                tabuleiro[linhaDP+i][colunaDP+i] = NAVIO;
-            }
-        }
-    }
-
-    // =====================================
-    // NAVIO DIAGONAL SECUNDÁRIA (/)
-    // =====================================
-
-    if ((linhaDS + TAM_NAVIO <= TAM_TABULEIRO) &&
-        (colunaDS - (TAM_NAVIO-1) >= 0)) {
-
-        sobreposicao = 0;
-
-        for(i = 0; i < TAM_NAVIO; i++) {
-            if(tabuleiro[linhaDS+i][colunaDS-i] != AGUA) {
-                sobreposicao = 1;
-            }
-        }
-
-        if(!sobreposicao) {
-            for(i = 0; i < TAM_NAVIO; i++) {
-                tabuleiro[linhaDS+i][colunaDS-i] = NAVIO;
-            }
-        }
-    }
-
-    // =====================================
-    // EXIBIÇÃO TABULEIRO
-    // =====================================
+//Saída visual amigável
+//~ → Água
+//N → Navio
+//* → Área da habilidade
+void imprimirTabuleiro(int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO])
+{
+    int i, j;
 
     printf("\n=== TABULEIRO BATALHA NAVAL ===\n\n");
 
     for(i = 0; i < TAM_TABULEIRO; i++) {
 
         for(j = 0; j < TAM_TABULEIRO; j++) {
-            printf("%2d ", tabuleiro[i][j]);
+
+            switch(tabuleiro[i][j]) {
+
+                case AGUA:
+                    printf("~ ");
+                    break;
+
+                case NAVIO:
+                    printf("N ");
+                    break;
+
+                case HABILIDADE:
+                    printf("* ");
+                    break;
+            }
         }
 
         printf("\n");
     }
-
-    return 0;
 }
 
+int main() {
 
-    // Nível Mestre - Habilidades Especiais com Matrizes
-    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
-    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
-    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
+    int tabuleiro[TAM_TABULEIRO][TAM_TABULEIRO] = {0};
 
-    // Exemplos de exibição das habilidades:
-    // Exemplo para habilidade em cone:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 1 1 1 1 1
-    
-    // Exemplo para habilidade em octaedro:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 0 0 1 0 0
+    int cone[TAM_HABILIDADE][TAM_HABILIDADE] = {0};
+    int cruz[TAM_HABILIDADE][TAM_HABILIDADE] = {0};
+    int octaedro[TAM_HABILIDADE][TAM_HABILIDADE] = {0};
 
-    // Exemplo para habilidade em cruz:
-    // 0 0 1 0 0
-    // 1 1 1 1 1
-    // 0 0 1 0 0
+    int i, j;
+
+    /* =====================================================
+       POSICIONAMENTO DOS 4 NAVIOS
+    ====================================================== */
+
+    /* Horizontal */
+    for(i=0;i<TAM_NAVIO;i++)
+        tabuleiro[1][1+i] = NAVIO;
+
+    /* Vertical */
+    for(i=0;i<TAM_NAVIO;i++)
+        tabuleiro[5+i][8] = NAVIO;
+
+    /* Diagonal principal (\) */
+    for(i=0;i<TAM_NAVIO;i++)
+        tabuleiro[0+i][5+i] = NAVIO;
+
+    /* Diagonal secundária (/) */
+    for(i=0;i<TAM_NAVIO;i++)
+        tabuleiro[4+i][2-i] = NAVIO;
+
+
+    /* =====================================================
+       MATRIZ HABILIDADE — CONE
+    ====================================================== */
+
+    for(i=0;i<TAM_HABILIDADE;i++) {
+
+        int inicio = TAM_HABILIDADE/2 - i;
+        int fim = TAM_HABILIDADE/2 + i;
+
+        for(j=0;j<TAM_HABILIDADE;j++) {
+
+            if(j >= inicio && j <= fim) {
+                cone[i][j] = 1;
+            }
+        }
+    }
+
+
+    /* =====================================================
+       MATRIZ HABILIDADE — CRUZ
+    ====================================================== */
+
+    for(i=0;i<TAM_HABILIDADE;i++) {
+        for(j=0;j<TAM_HABILIDADE;j++) {
+
+            if(i == TAM_HABILIDADE/2 ||
+               j == TAM_HABILIDADE/2)
+            {
+                cruz[i][j] = 1;
+            }
+        }
+    }
+
+
+    /* =====================================================
+       MATRIZ HABILIDADE — OCTAEDRO (LOSANGO)
+    ====================================================== */
+
+    int centro = TAM_HABILIDADE/2;
+
+    for(i=0;i<TAM_HABILIDADE;i++) {
+        for(j=0;j<TAM_HABILIDADE;j++) {
+
+            int distancia =
+                (i > centro ? i-centro : centro-i) +
+                (j > centro ? j-centro : centro-j);
+
+            if(distancia <= centro) {
+                octaedro[i][j] = 1;
+            }
+        }
+    }
+
+
+    /* =====================================================
+       SOBREPOSIÇÃO DAS HABILIDADES
+    ====================================================== */
+
+    aplicarHabilidade(tabuleiro, cone, 2, 7);
+
+    aplicarHabilidade(tabuleiro, cruz, 7, 3);
+
+    aplicarHabilidade(tabuleiro, octaedro, 5, 5);
+
+
+    /* =====================================================
+       EXIBIÇÃO FINAL
+    ====================================================== */
+
+    imprimirTabuleiro(tabuleiro);
 
     return 0;
 }
